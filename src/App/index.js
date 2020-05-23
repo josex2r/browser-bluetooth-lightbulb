@@ -3,19 +3,21 @@ import './index.css';
 import Color from '../Color';
 import Lightbulb from '../Lightbulb';
 
+const DEFAULT_COLOR = {
+  rgb: {
+    r: 255,
+    g: 0,
+    b: 0,
+  }
+};
+const DEFAULT_MODE = 'color';
+
 function App() {
-  const [color, setColor] = useState({
-    rgb: {
-      r: 255,
-      g: 0,
-      b: 0,
-    }
-  });
-  const [mode, setMode] = useState('color');
+  const [color, setColor] = useState(DEFAULT_COLOR);
+  const [mode, setMode] = useState(DEFAULT_MODE);
   const [connected, setConnected] = useState(false);
 
-  console.log(mode)
-
+  debugger
   return (
     <div className="App">
       <header className="App-header">
