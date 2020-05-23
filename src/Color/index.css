@@ -1,0 +1,10 @@
+.container {
+  width: 80%;
+  max-width: 600px;
+  justify-content: center;
+  display: flex;
+}
+
+.mode {
+  margin-left: 16px !important;
+}

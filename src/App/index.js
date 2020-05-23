@@ -1,10 +1,20 @@
 import React, { useState } from 'react';
 import './index.css';
-import { SliderPicker } from 'react-color';
+import Color from '../Color';
 import Lightbulb from '../Lightbulb';
 
 function App() {
-  const [color, setColor] = useState('#fff');
+  const [color, setColor] = useState({
+    rgb: {
+      r: 255,
+      g: 0,
+      b: 0,
+    }
+  });
+  const [mode, setMode] = useState('color');
+  const [connected, setConnected] = useState(false);
+
+  console.log(mode)
 
   return (
     <div className="App">
@@ -12,13 +22,21 @@ function App() {
         <p>Bluetooth <code>Lightbulb</code></p>
 
         <div className="container">
-          <SliderPicker
-            color={ color }
-            onChangeComplete={ setColor }
-          />
+          { connected &&
+            <Color
+              color={ color }
+              onChangeColor={ setColor }
+              mode={ mode }
+              onChangeMode={ setMode }
+            />
+          }
         </div>
 
-        <Lightbulb color={ color } />
+        <Lightbulb
+          color={ color }
+          mode={ mode }
+          onConnect={ setConnected.bind(null, true) }
+        />
       </header>
     </div>
   );

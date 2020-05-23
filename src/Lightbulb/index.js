@@ -3,7 +3,8 @@ import './index.css';
 import Button from '@material-ui/core/Button';
 
 const CANDLE_SERVICE_UUID = 0xFF02;
-const CANDLE_COLOR_UUID = 0xfffc;
+const CANDLE_COLOR_UUID = 0xFFFC;
+const CANDLE_EFFECT_UUID = 0xFFFB;
 
 class Lightbulb extends React.Component {
   constructor(props) {
@@ -16,34 +17,26 @@ class Lightbulb extends React.Component {
     };
   }
 
-  get isConnected() {
-    return this.device && this.device.gatt.connected;
-  }
-
   async connect() {
-    if (this.isConnected) {
+    if (this.state.connected) {
       return;
     }
 
-    try {
-      const device = await navigator.bluetooth.requestDevice({
-        filters: [{
-          name: 'PLAYBULB'
-        }, {
-          services: [CANDLE_SERVICE_UUID]
-        }],
-        optionalServices: ['battery_service']
-      });
+    const device = await navigator.bluetooth.requestDevice({
+      filters: [{
+        name: 'PLAYBULB'
+      }, {
+        services: [CANDLE_SERVICE_UUID]
+      }],
+      optionalServices: ['battery_service']
+    });
 
-      this.setState({ device });
+    this.setState({ device });
 
-      await device.gatt.connect();
+    await device.gatt.connect();
 
-      this.setState({ connected: true });
-    } catch (error) {
-      console.error(error)
-      this.setState({ error });
-    }
+    this.setState({ connected: true });
+    this.props.onConnect();
   }
 
   async setColor(r, g, b) {
@@ -59,6 +52,48 @@ class Lightbulb extends React.Component {
     characteristic.writeValue(data);
   }
 
+  async setCandleEffectColor(r, g, b) {
+    if (!this.state.connected) {
+      return;
+    }
+
+    const device = this.state.device;
+    const data = new Uint8Array([0x00, r, g, b, 0x04, 0x00, 0x01, 0x00]);
+    const service = await device.gatt.getPrimaryService(CANDLE_SERVICE_UUID);
+    const characteristic = await service.getCharacteristic(CANDLE_EFFECT_UUID);
+
+    characteristic.writeValue(data);
+  }
+
+  async setEffect(effect) {
+    if (!this.state.connected) {
+      return;
+    }
+
+    const device = this.state.device;
+    const data = new Uint8Array(effect);
+    const service = await device.gatt.getPrimaryService(CANDLE_SERVICE_UUID);
+    const characteristic = await service.getCharacteristic(CANDLE_EFFECT_UUID);
+
+    characteristic.writeValue(data);
+  }
+
+  async setFlashingEffect(r, g, b) {
+    await this.setEffect([0x00, r, g, b, 0x00, 0x00, 0x1F, 0x00]);
+  }
+
+  async setPulseEffect(r, g, b) {
+    await this.setEffect([0x00, r, g, b, 0x01, 0x00, 0x09, 0x00]);
+  }
+
+  async setRainbowEffect() {
+    await this.setEffect([0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x01, 0x00]);
+  }
+
+  async setRainbowFadeEffect() {
+    await this.setEffect([0x01, 0x00, 0x00, 0x00, 0x03, 0x00, 0x26, 0x00]);
+  }
+
   async readValue(characteristic) {
     const value = await characteristic.readValue();
     const decoder = new TextDecoder('utf-8');
@@ -66,14 +101,36 @@ class Lightbulb extends React.Component {
     return decoder.decode(value);
   }
 
-  render() {
-    const color = this.props.color;
-
-    if (typeof color === 'object' && this.state.connected) {
-      const { r, g, b } = color.rgb;
-
-      this.setColor(r, g, b);
+  async start() {
+    if (!this.state.connected) {
+      return;
     }
+    const { color, mode } = this.props;
+    const { r, g, b } = color.rgb;
+
+    switch(mode) {
+      case 'candle':
+        this.setCandleEffectColor(r, g, b);
+        break;
+      case 'flash':
+        this.setFlashingEffect(r, g, b);
+        break;
+      case 'pulse':
+        this.setPulseEffect(r, g, b);
+        break;
+      case 'rainbow':
+        this.setRainbowEffect();
+        break;
+      case 'rainbowFade':
+        this.setRainbowFadeEffect();
+        break;
+      default:
+        this.setColor(r, g, b);
+    }
+  }
+
+  render() {
+    this.start();
 
     return (
       // <p>ssss</p>
@@ -85,7 +142,7 @@ class Lightbulb extends React.Component {
 const ConnectButton = ({ state, onConnect }) => {
   if (state) {
     return (
-      <p>{ 'Conectado!' }</p>
+      <></>
     );
   }
 
