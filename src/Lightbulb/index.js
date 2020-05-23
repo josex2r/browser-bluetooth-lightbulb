@@ -52,19 +52,6 @@ class Lightbulb extends React.Component {
     characteristic.writeValue(data);
   }
 
-  async setCandleEffectColor(r, g, b) {
-    if (!this.state.connected) {
-      return;
-    }
-
-    const device = this.state.device;
-    const data = new Uint8Array([0x00, r, g, b, 0x04, 0x00, 0x01, 0x00]);
-    const service = await device.gatt.getPrimaryService(CANDLE_SERVICE_UUID);
-    const characteristic = await service.getCharacteristic(CANDLE_EFFECT_UUID);
-
-    characteristic.writeValue(data);
-  }
-
   async setEffect(effect) {
     if (!this.state.connected) {
       return;
@@ -76,6 +63,10 @@ class Lightbulb extends React.Component {
     const characteristic = await service.getCharacteristic(CANDLE_EFFECT_UUID);
 
     characteristic.writeValue(data);
+  }
+
+  async setCandleEffectColor(r, g, b) {
+    await this.setEffect([0x00, r, g, b, 0x04, 0x00, 0x01, 0x00]);
   }
 
   async setFlashingEffect(r, g, b) {
