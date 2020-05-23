@@ -17,7 +17,6 @@ function App() {
   const [mode, setMode] = useState(DEFAULT_MODE);
   const [connected, setConnected] = useState(false);
 
-  debugger
   return (
     <div className="App">
       <header className="App-header">
@@ -37,7 +36,7 @@ function App() {
         <Lightbulb
           color={ color }
           mode={ mode }
-          onConnect={ setConnected.bind(null, true) }
+          onConnect={ () => setConnected(true) }
         />
       </header>
     </div>
