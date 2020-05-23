@@ -11,7 +11,11 @@ import {
 function Color({ color, onChangeColor, mode, onChangeMode }) {
   return (
     <div className="container">
-      <ChromePicker color={ color } onChangeComplete={ onChangeColor } />
+      <ChromePicker
+        color={ color }
+        onChangeComplete={ onChangeColor }
+        disableAlpha={ true }
+      />
 
       <FormControl component="fieldset" className="mode">
         <RadioGroup aria-label="gender" name="mode" value={ mode } onChange={ (event) => onChangeMode(event.target.value) }>
