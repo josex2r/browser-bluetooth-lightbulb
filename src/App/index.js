@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import './App.css';
+import './index.css';
 import { SliderPicker } from 'react-color';
+import Lightbulb from '../Lightbulb';
 
 function App() {
   const [color, setColor] = useState('#fff');
@@ -16,6 +17,8 @@ function App() {
             onChangeComplete={ setColor }
           />
         </div>
+
+        <Lightbulb color={ color } />
       </header>
     </div>
   );
