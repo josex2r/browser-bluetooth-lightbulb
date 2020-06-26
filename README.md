@@ -1,4 +1,10 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# browser-bluetooth-lightbulb
+
+Testing browser Bluetooth API.
+
+<p align="center">
+  <img width="460" height="300" src="./example.gif">
+</p>
 
 ## Available Scripts
 
